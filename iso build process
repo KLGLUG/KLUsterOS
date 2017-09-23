@@ -1,0 +1,90 @@
+Process of making an iso:
+
+
+mkdir -p config/packages.chroot
+
+git clone http://anonscm.debian.org/git/debian-live/live-build.git
+
+git clone http://anonscm.debian.org/git/debian-live/live-boot.git
+
+git clone http://anonscm.debian.org/git/debian-live/live-config.git
+
+cd live-build
+
+dpkg-buildpackage -b -uc -us
+cd ..
+dpkg -i live-build_*.deb (* check the live-build.deb name)
+
+cd live-boot
+dpkg-buildpackage -b -uc -us
+cd ..
+
+cd live-config
+dpkg-buildpackage -b -uc -us
+cd ..
+
+cp live-boot{_,-initramfs-tools,-doc}*.deb  config/packages.chroot/
+cp live-config{_,-sysvinit,-doc}*.deb  config/packages.chroot/
+
+
+Creating iso using live-build:
+
+mkdir newiso ; cd newiso
+lb config
+lb build
+now the iso file is created in the same directory so go with testing with virtualbox.
+The created iso file will be only of command line.
+
+Virtualbox installation:
+
+
+apt install virtualbox virtualbox-qt
+virtualbox
+
+
+
+
+Now installing desktop environment:
+ type the following in terminal
+
+
+lb config
+echo task-gnome-desktop > config/package-lists/desktop.list.chroot
+->here this will install gnome desktop environment.
+->now again build new iso file using the following command.
+lb build
+->then go for testing the file.
+
+
+
+
+Plymouth installation:
+
+
+apt install plymouth
+/usr/sbin/plymouth-set-default-theme --list
+-->Then select the theme shown in the list .
+/usr/sbin/plymouth-set-default-theme Themename
+
+
+
+
+
+Debian installer installation:
+
+
+lb config --debian-installer live
+echo debian-installer-launcher >> config/package-lists/my.list.chroot
+ echo "d-i debian-installer/locale string en_US" \
+         >> config/includes.installer/preseed.cfg
+
+--->Now create a new build by using .
+lb build
+-->Now again go for testing using virtualbox.
+-----------------------------------------------------------------------------------------
+Installing required tools or pre installed tools:
+
+cd live-build/newiso
+ chroot chroot
+---->now continue installing required tools by using.
+apt install package-name
